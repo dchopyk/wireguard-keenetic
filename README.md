@@ -30,7 +30,7 @@ Wire Guard - это протокол VPN типа "точка-точка", ко�
 Скачайте и выполните этот скрипт от root-пользователя.
 
 ```bash
-wget https://gitflic.ru/project/denischopyk/wireguard-keenetic/blob/raw?file=wireguard-keenetic.sh -O wireguard-keenetic.sh
+wget https://raw.githubusercontent.com/dchopyk/wireguard-keenetic/main/wireguard-keenetic.sh -O wireguard-keenetic.sh
 chmod +x wireguard-keenetic.sh
 ./wireguard-keenetic.sh
 ```
