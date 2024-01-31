@@ -1,25 +1,22 @@
-# WireGuard MikroTik config generator
+# Генератор конфига WireGuard-сервера для роутеров Keenetic
 
-![visitors](https://visitor-badge.laobi.icu/badge?page_id=IgorKha.wireguard-mikrotik)
+**Этот скрипт предназначен для генерирования конфигурационных файлов [WireGuard](https://www.wireguard.com/) VPN для Keenetic-роутеров.**
 
-**This project is a bash script designed to simplify the configuration of a [WireGuard](https://www.wireguard.com/) VPN on a MikroTik device.**
+Wire Guard - это протокол VPN типа "точка-точка", который предлагает различные возможности использования. В данном контексте мы имеем в виду VPN, при котором трафик клиента надежно туннелируется к серверу.
 
-WireGuard is a point-to-point VPN protocol that offers various usage possibilities. In this context, we refer to a VPN where the client's traffic is securely tunneled to the server. The server applies NAT to the client's traffic, making it appear as though the client is accessing the internet using the server's IP address.
+Этот скрипт пока поддерживает только IPv4. При обнаружении багов, пожалуйста сообщайте в [проблемы](https://gitflic.ru/project/denischopyk/wireguard-keenetic/issue) постараюсь решить по возможности.
 
-The script fully supports both IPv4 and IPv6. Please refer to the [issues](https://github.com/IgorKha/wireguard-mikrotik/issues) section for ongoing development, bug reports, and planned features.
+Скрипт я полностью не писал с нуля, а лишь портировал с аналогичного: [wireguard-mikrotik](https://github.com/IgorKha/wireguard-mikrotik)
 
-A portion of this script is based on the following repository: [wireguard-install](https://github.com/angristan/wireguard-install)
 
-For monitoring the performance of your MikroTik device, you can use [Grafana-MikroTik](https://github.com/IgorKha/Grafana-Mikrotik) to visualize measurements.
+## Требования
 
-## Requirements
-
-Packages:
+Пакеты:
 
 - wireguard-tools
 - qrencode
 
-Supported distributions:
+Поддерживаемые дистрибутивы:
 
 - Ubuntu >= 16.04
 - Debian >= 10
@@ -27,52 +24,53 @@ Supported distributions:
 - CentOS
 - Arch Linux
 - Oracle Linux
-- macOS (experimental) [**requires** [**brew**](https://brew.sh) package manager]
 
-## Usage
+## Ипользование
 
-Download and execute the script on superuser. Answer the questions asked by the script and it will take care of the rest.
+Скачайте и выполните этот скрипт от root-пользователя.
 
 ```bash
-curl -O https://raw.githubusercontent.com/IgorKha/wireguard-mikrotik/master/wireguard-mikrotik.sh
-chmod +x wireguard-mikrotik.sh
-./wireguard-mikrotik.sh
+wget https://gitflic.ru/project/denischopyk/wireguard-keenetic/blob/raw?file=wireguard-keenetic.sh -O wireguard-keenetic.sh
+chmod +x wireguard-keenetic.sh
+./wireguard-keenetic.sh
 ```
 
-Once run, the script will create a "wireguard" folder with your settings.
+Как только запустите скрипт, вам предложит ввести имя Wireguard-подключения. Перед тем, как выбрать имя, подключитесь по SSH к роутеру и введите 
 
-Run the script again to add clients (enter exist interface name) or create new server (enter new interface name)!
+```
+show interfaces
+```
 
-[![asciicast](https://asciinema.org/a/64wco1fA8k251anGsSQDcH9jW.svg)](https://asciinema.org/a/64wco1fA8k251anGsSQDcH9jW)
-
-## Structure
+В списке интерфейсов ищите с именем Wireguard1, Wireguard2, Wireguard3. Выберите следующий свободный и укажите его в скрипте.
+После того, как скрипт сгенерировал конфиг - найдите в папке wireguard/Wireguard1/Wireguard1.cfg, откройте в любом редакторе и скопируйте с него всё содержимое в консоль Keenetic.  
+## Структура
 
 ```text
 .
 ├── wireguard
-│   ├── wg0 - WireGuard interface name (server name)
+│   ├── Wireguard1 - WireGuard interface name (server name)
 │   │   ├── client - clients config folder
 │   │   │   └── user1
-│   │   │       ├── mikrotik-peer-wg0-client-user1.rsc  - MikroTik peer config [server side]
-│   │   │       ├── wg0-client-user1.conf - config file for your client
-│   │   │       └── wg0-client-user1.png - and QR client config
-│   │   ├── mikrotik
-│   │   │   └── wg0.rsc - paste in your mikrotik console
+│   │   │       ├── keenetic-peer-Wireguard1-client-user1.cfg  - Keenetic peer config [server side]
+│   │   │       ├── Wireguard1-client-user1.conf - config file for your client
+│   │   │       └── Wireguard1-client-user1.png - and QR client config
+│   │   ├── keenetic
+│   │   │   └── Wireguard1.cfg - paste in your keenetic console
 │   │   ├── params
-│   │   └── wg0.conf
-│   └── wg1 - WireGuard interface name (server name)
+│   │   └── Wireguard1.conf
+│   └── Wireguard2 - WireGuard interface name (server name)
 │       ├── client - clients config folder
 │       │   ├── user1
-│       │   │   ├── mikrotik-peer-wg1-client-user1.rsc
-│       │   │   ├── wg1-client-user1.conf
-│       │   │   └── wg1-client-user1.png
+│       │   │   ├── keenetic-peer-Wireguard2-client-user1.cfg - paste in your keenetic console
+│       │   │   ├── Wireguard2-client-user1.conf
+│       │   │   └── Wireguard2-client-user1.png
 │       │   └── user2
-│       │       ├── mikrotik-peer-wg1-client-user2.rsc
-│       │       ├── wg1-client-user2.conf
-│       │       └── wg1-client-user2.png
-│       ├── mikrotik
-│       │   └── wg1.rsc
+│       │       ├── keenetic-peer-Wireguard2-client-user2.cfg - paste in your keenetic console
+│       │       ├── Wireguard2-client-user2.conf
+│       │       └── Wireguard2-client-user2.png
+│       ├── keenetic
+│       │   └── Wireguard2.cfg - paste in your keenetic console
 │       ├── params
-│       └── wg1.conf
-└── wireguard-mikrotik.sh
+│       └── Wireguard2.conf
+└── wireguard-keenetic.sh
 ```
